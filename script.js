@@ -154,52 +154,71 @@ async function loadData() {
     }
 }
 
-// Parser CSV simples
+// Parser CSV robusto
 function parseCSV(csvText) {
-    const lines = csvText.trim().split('\n');
-    const headers = lines[0].split(CONFIG.delimiter).map(h => h.trim().replace(/"/g, ''));
+    const lines = csvText.trim().split("\n");
     const data = [];
-    
+    let currentLine = "";
+
     for (let i = 1; i < lines.length; i++) {
-        const values = parseCSVLine(lines[i]);
-        if (values.length >= 3) {
-            const item = {
-                titulo: values[0] || '',
-                categoria: values[1] || '',
-                resposta: values[2] || '', // terceira coluna é "texto"
-                emoji: getEmojiForCategory(values[1] || ''),
-                caracteres: (values[2] || '').length
-            };
-            
-            if (item.titulo && item.resposta) {
-                data.push(item);
+        const line = lines[i];
+        currentLine += line;
+
+        // Contar aspas para determinar se a linha está completa
+        const quoteCount = (currentLine.match(/"/g) || []).length;
+
+        if (quoteCount % 2 === 0) {
+            // Número par de aspas = linha completa
+            const values = parseCSVLine(currentLine);
+            if (values.length >= 3) {
+                const item = {
+                    titulo: values[0] || '',
+                    categoria: values[1] || '',
+                    resposta: values[2] || '',
+                    emoji: getEmojiForCategory(values[1] || ''),
+                    caracteres: (values[2] || '').length
+                };
+
+                if (item.titulo && item.resposta) {
+                    data.push(item);
+                }
             }
+            currentLine = "";
+        } else {
+            // Número ímpar de aspas = linha continua na próxima
+            currentLine += "\n";
         }
     }
-    
+
     return data;
 }
 
-// Parser para linha CSV (lida com vírgulas dentro de aspas)
+// Parser para linha CSV individual
 function parseCSVLine(line) {
     const result = [];
-    let current = '';
+    let current = "";
     let inQuotes = false;
-    
+
     for (let i = 0; i < line.length; i++) {
         const char = line[i];
-        
-        if (char === '"') {
-            inQuotes = !inQuotes;
-        } else if (char === CONFIG.delimiter && !inQuotes) {
-            result.push(current.trim().replace(/"/g, ''));
-            current = '';
+
+        if (char === CONFIG.delimiter && !inQuotes) {
+            result.push(current.trim());
+            current = "";
+        } else if (char === '"') {
+            if (i + 1 < line.length && line[i + 1] === '"') {
+                // Aspas duplas escapadas
+                current += '"';
+                i++; // Pular próxima aspa
+            } else {
+                inQuotes = !inQuotes;
+            }
         } else {
             current += char;
         }
     }
     
-    result.push(current.trim().replace(/"/g, ''));
+    result.push(current.trim());
     return result;
 }
 
