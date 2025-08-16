@@ -74,63 +74,56 @@ E você pode ter alguns cuidados para manter ele lindo por mais tempo:
 🔥 Alimentos quentes podem danificá-lo.",`;
 
 // Carregar dados locais (sem dependência de Google Sheets)
-async function loadData() {
+function loadData() {
     showLoading();
     
-    try {
-        // Dados simples para teste
-        const testData = [
-            {
-                id: 'response-1',
-                titulo: 'Moldagem e Dentista',
-                categoria: 'Informação',
-                resposta: '📝 Olá 😊, poderia informar quando fez a moldagem? Qual seu dentista? 🦷',
-                emoji: 'ℹ️',
-                caracteres: 72
-            },
-            {
-                id: 'response-2',
-                titulo: 'Valor e Procedimento',
-                categoria: 'Financeiro',
-                resposta: 'Informação sobre valor e procedimento:\nO valor é R$150,00 💵, demora cerca de 10 a 15 dias para ficar pronto! Pode ficar pronto antes! Recebo por Pix ou transferência no momento da entrega, aviso 2 dias antes!\nPIX: 95991195913 - Jaison Jose Bastos Martins 🔒\nOBS: Pagamento somente quando eu avisar que está pronto!',
-                emoji: '💰',
-                caracteres: 315
-            },
-            {
-                id: 'response-3',
-                titulo: 'Lembrete de Pagamento',
-                categoria: 'Financeiro',
-                resposta: 'O pagamento é só quando eu avisar que o trabalho está pronto 💳. Qualquer dúvida, só chamar! 😊',
-                emoji: '💰',
-                caracteres: 95
-            },
-            {
-                id: 'response-4',
-                titulo: 'Trabalho Finalizado',
-                categoria: 'Entrega',
-                resposta: 'Olá! 🎉 Seu trabalho está pronto! Agora fico aguardando seu pagamento. Assim que fizer o Pix, me avise para que eu deixe no Sest Senat, ok? ✔️\n💸 PIX: 95991195913 - Jaison Jose Bastos Martins',
-                emoji: '🎉',
-                caracteres: 191
-            },
-            {
-                id: 'response-5',
-                titulo: 'Guia de Cuidados',
-                categoria: 'Orientação',
-                resposta: 'Esse é o seu aparelho, feito especialmente pra você! 🦷✨\n\nE você pode ter alguns cuidados para manter ele lindo por mais tempo:\n🪥 Escove o aparelho todos os dias com DETERGENTE NEUTRO, para não formar tártaro e mau cheiro.\n⚠️ Não segure no arco (fio) para higienizá-lo.\n💦 Enxágue bem para retirar toda saliva sempre que retirar da boca e guardar na caixinha.\n📦 Guarde-o sempre na caixinha própria, evitando risco de quebra e perda.\n👃 Lembre-se que o aparelho pega o cheiro da sua boca, então escove sempre os dentes.\n🍽️ Retire o aparelho sempre para se alimentar.\n🔥 Alimentos quentes podem danificá-lo.',
-                emoji: '🦷',
-                caracteres: 608
-            }
-        ];
-        
-        allResponses = testData;
-        filteredResponses = [...allResponses];
-        renderResponses();
-        hideLoading();
-        
-    } catch (error) {
-        console.log('Erro ao carregar dados:', error.message);
-        showError();
-    }
+    const testData = [
+        {
+            id: 'response-1',
+            titulo: 'Moldagem e Dentista',
+            categoria: 'Informação',
+            resposta: '📝 Olá 😊, poderia informar quando fez a moldagem? Qual seu dentista? 🦷',
+            emoji: 'ℹ️',
+            caracteres: 72
+        },
+        {
+            id: 'response-2',
+            titulo: 'Valor e Procedimento',
+            categoria: 'Financeiro',
+            resposta: 'Informação sobre valor e procedimento:\nO valor é R$150,00 💵, demora cerca de 10 a 15 dias para ficar pronto! Pode ficar pronto antes! Recebo por Pix ou transferência no momento da entrega, aviso 2 dias antes!\nPIX: 95991195913 - Jaison Jose Bastos Martins 🔒\nOBS: Pagamento somente quando eu avisar que está pronto!',
+            emoji: '💰',
+            caracteres: 315
+        },
+        {
+            id: 'response-3',
+            titulo: 'Lembrete de Pagamento',
+            categoria: 'Financeiro',
+            resposta: 'O pagamento é só quando eu avisar que o trabalho está pronto 💳. Qualquer dúvida, só chamar! 😊',
+            emoji: '💰',
+            caracteres: 95
+        },
+        {
+            id: 'response-4',
+            titulo: 'Trabalho Finalizado',
+            categoria: 'Entrega',
+            resposta: 'Olá! 🎉 Seu trabalho está pronto! Agora fico aguardando seu pagamento. Assim que fizer o Pix, me avise para que eu deixe no Sest Senat, ok? ✔️\n💸 PIX: 95991195913 - Jaison Jose Bastos Martins',
+            emoji: '🎉',
+            caracteres: 191
+        },
+        {
+            id: 'response-5',
+            titulo: 'Guia de Cuidados',
+            categoria: 'Orientação',
+            resposta: 'Esse é o seu aparelho, feito especialmente pra você! 🦷✨\n\nE você pode ter alguns cuidados para manter ele lindo por mais tempo:\n🪥 Escove o aparelho todos os dias com DETERGENTE NEUTRO, para não formar tártaro e mau cheiro.\n⚠️ Não segure no arco (fio) para higienizá-lo.\n💦 Enxágue bem para retirar toda saliva sempre que retirar da boca e guardar na caixinha.\n📦 Guarde-o sempre na caixinha própria, evitando risco de quebra e perda.\n👃 Lembre-se que o aparelho pega o cheiro da sua boca, então escove sempre os dentes.\n🍽️ Retire o aparelho sempre para se alimentar.\n🔥 Alimentos quentes podem danificá-lo.',
+            emoji: '🦷',
+            caracteres: 608
+        }
+    ];
+    
+    allResponses = testData;
+    filteredResponses = [...allResponses];
+    renderResponses();
+    hideLoading();
 }
 
 // Parser CSV robusto
@@ -250,6 +243,7 @@ function renderResponses() {
 // Criar card de resposta
 function createResponseCard(response) {
     const categoryClass = getCategoryClass(response.categoria);
+    const previewText = getPreviewText(response.resposta, 100); // Primeiros 100 caracteres
     
     return `
         <div class="card-hover bg-white rounded-2xl p-6 shadow-lg transition-all duration-300 fade-in">
@@ -277,19 +271,28 @@ function createResponseCard(response) {
                 </div>
             </div>
             
-            <div class="text-gray-700 leading-relaxed mb-4 overflow-hidden transition-all duration-300 ease-in-out max-h-0" id="response-text-${response.id}">
-                ${formatResponseText(response.resposta)}
+            <!-- Prévia do texto sempre visível -->
+            <div class="text-gray-700 leading-relaxed mb-4">
+                <div class="preview-text">
+                    ${formatResponseText(previewText)}${response.resposta.length > 100 ? '...' : ''}
+                </div>
+                <div class="full-text hidden overflow-hidden transition-all duration-300 ease-in-out" id="response-text-${response.id}">
+                    ${formatResponseText(response.resposta)}
+                </div>
             </div>
             
-            <div class="flex justify-center">
-                <button class="btn-toggle-text text-gray-500 hover:text-gray-700 transition-colors" data-target="response-text-${response.id}">
-                    <i class="fas fa-chevron-down text-xl"></i>
+            <!-- Footer com caracteres e botão dropdown -->
+            <div class="flex items-center justify-between text-sm text-gray-500">
+                <div class="flex items-center">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    ${response.caracteres} caracteres
+                </div>
+                ${response.resposta.length > 100 ? `
+                <button class="btn-toggle-text text-gray-500 hover:text-gray-700 transition-colors flex items-center" data-target="response-text-${response.id}">
+                    <span class="mr-1 text-xs">Ver mais</span>
+                    <i class="fas fa-chevron-down"></i>
                 </button>
-            </div>
-            
-            <div class="text-sm text-gray-500 flex items-center mt-2">
-                <i class="fas fa-info-circle mr-2"></i>
-                ${response.caracteres} caracteres
+                ` : ''}
             </div>
         </div>
     `;
@@ -320,9 +323,17 @@ function formatResponseText(text) {
 
 // Escapar HTML
 function escapeHtml(text) {
-    const div = document.createElement('div');
+    const div = document.createElement("div");
     div.textContent = text;
     return div.innerHTML;
+}
+
+// Obter prévia do texto
+function getPreviewText(text, maxLength) {
+    if (text.length <= maxLength) {
+        return text;
+    }
+    return text.substring(0, maxLength);
 }
 
 // Configurar event listeners dos cards
@@ -344,22 +355,26 @@ function setupCardEventListeners() {
     });
 
     // Botões de toggle de texto
-    document.querySelectorAll('.btn-toggle-text').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const targetId = this.getAttribute('data-target');
-            const targetElement = document.getElementById(targetId);
-            const icon = this.querySelector('i');
+    document.querySelectorAll(".btn-toggle-text").forEach(btn => {
+        btn.addEventListener("click", function() {
+            const targetId = this.getAttribute("data-target");
+            const fullTextElement = document.getElementById(targetId);
+            const previewTextElement = this.closest(".card-hover").querySelector(".preview-text");
+            const icon = this.querySelector("i");
+            const span = this.querySelector("span");
 
-            if (targetElement.classList.contains('max-h-0')) {
-                targetElement.classList.remove('max-h-0');
-                targetElement.classList.add('max-h-screen');
-                icon.classList.remove('fa-chevron-down');
-                icon.classList.add('fa-chevron-up');
+            if (fullTextElement.classList.contains("hidden")) {
+                fullTextElement.classList.remove("hidden");
+                previewTextElement.classList.add("hidden");
+                icon.classList.remove("fa-chevron-down");
+                icon.classList.add("fa-chevron-up");
+                span.textContent = "Ver menos";
             } else {
-                targetElement.classList.remove('max-h-screen');
-                targetElement.classList.add('max-h-0');
-                icon.classList.remove('fa-chevron-up');
-                icon.classList.add('fa-chevron-down');
+                fullTextElement.classList.add("hidden");
+                previewTextElement.classList.remove("hidden");
+                icon.classList.remove("fa-chevron-up");
+                icon.classList.add("fa-chevron-down");
+                span.textContent = "Ver mais";
             }
         });
     });
