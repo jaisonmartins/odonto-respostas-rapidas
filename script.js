@@ -1,7 +1,7 @@
 // Configurações da aplicação
 const CONFIG = {
     sheetsUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSNMZw_fZj10NQOvxSEDJUlSc4UdcmHvRzX4m6slpq6f-saYglDYFs0pbg9uk8FKgl5nK_ZLhijHLRk/pub?gid=0&single=true&output=csv',
-    delimiter: ',',
+    delimiter: ",",
     storageKey: 'respostas-rapidas-config'
 };
 
@@ -16,65 +16,27 @@ const elements = {
     loadingState: document.getElementById('loadingState'),
     errorState: document.getElementById('errorState'),
     noResults: document.getElementById('noResults'),
-    settingsBtn: document.getElementById('settingsBtn'),
-    settingsModal: document.getElementById('settingsModal'),
-    closeSettings: document.getElementById('closeSettings'),
-    sheetsUrl: document.getElementById('sheetsUrl'),
-    saveSettings: document.getElementById('saveSettings'),
-    loadSample: document.getElementById('loadSample'),
+    backToTop: document.getElementById('backToTop'),
     toast: document.getElementById('toast'),
     toastMessage: document.getElementById('toastMessage')
 };
 
 // Inicialização da aplicação
 document.addEventListener('DOMContentLoaded', function() {
-    loadConfig();
     setupEventListeners();
     loadData();
 });
-
-// Carregar configurações salvas
-function loadConfig() {
-    const savedConfig = localStorage.getItem(CONFIG.storageKey);
-    if (savedConfig) {
-        const config = JSON.parse(savedConfig);
-        CONFIG.sheetsUrl = config.sheetsUrl || CONFIG.sheetsUrl;
-        elements.sheetsUrl.value = CONFIG.sheetsUrl;
-    }
-}
-
-// Salvar configurações
-function saveConfig() {
-    const config = {
-        sheetsUrl: CONFIG.sheetsUrl
-    };
-    localStorage.setItem(CONFIG.storageKey, JSON.stringify(config));
-}
 
 // Configurar event listeners
 function setupEventListeners() {
     // Busca em tempo real
     elements.searchInput.addEventListener('input', debounce(handleSearch, 300));
     
-    // Modal de configurações
-    elements.settingsBtn.addEventListener('click', openSettings);
-    elements.closeSettings.addEventListener('click', closeSettings);
-    elements.saveSettings.addEventListener('click', saveSettingsHandler);
-    elements.loadSample.addEventListener('click', loadSampleData);
+    // Botão voltar ao topo
+    elements.backToTop.addEventListener('click', scrollToTop);
     
-    // Fechar modal clicando fora
-    elements.settingsModal.addEventListener('click', function(e) {
-        if (e.target === elements.settingsModal) {
-            closeSettings();
-        }
-    });
-    
-    // Tecla ESC para fechar modal
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && !elements.settingsModal.classList.contains('hidden')) {
-            closeSettings();
-        }
-    });
+    // Mostrar/ocultar botão baseado na posição do scroll
+    window.addEventListener('scroll', handleScroll);
 }
 
 // Debounce para otimizar a busca
@@ -111,46 +73,21 @@ E você pode ter alguns cuidados para manter ele lindo por mais tempo:
 🍽️ Retire o aparelho sempre para se alimentar.
 🔥 Alimentos quentes podem danificá-lo.",`;
 
-// Carregar dados do Google Sheets
+// Carregar dados locais (sem dependência de Google Sheets)
 async function loadData() {
     showLoading();
     
     try {
-        // Tentar carregar do Google Sheets primeiro
-        const response = await fetch(CONFIG.sheetsUrl, {
-            mode: 'cors',
-            headers: {
-                'Accept': 'text/csv,text/plain,*/*'
-            }
-        });
-        
-        let csvText;
-        if (response.ok) {
-            csvText = await response.text();
-        } else {
-            throw new Error('Erro CORS - usando dados locais');
-        }
-        
-        const data = parseCSV(csvText);
-        
-        if (data.length === 0) {
-            throw new Error('Nenhum dado encontrado - usando dados locais');
-        }
-        
+        // Usar dados locais diretamente
+        const data = parseCSV(localData);
         allResponses = data;
         filteredResponses = [...allResponses];
         renderResponses();
         hideLoading();
         
     } catch (error) {
-        console.log('Carregando dados locais devido a:', error.message);
-        
-        // Usar dados locais como fallback
-        const data = parseCSV(localData);
-        allResponses = data;
-        filteredResponses = [...allResponses];
-        renderResponses();
-        hideLoading();
+        console.log('Erro ao carregar dados:', error.message);
+        showError();
     }
 }
 
@@ -172,6 +109,7 @@ function parseCSV(csvText) {
             const values = parseCSVLine(currentLine);
             if (values.length >= 3) {
                 const item = {
+                    id: `response-${data.length + 1}`,
                     titulo: values[0] || '',
                     categoria: values[1] || '',
                     resposta: values[2] || '',
@@ -207,9 +145,9 @@ function parseCSVLine(line) {
             current = "";
         } else if (char === '"') {
             if (i + 1 < line.length && line[i + 1] === '"') {
-                // Aspas duplas escapadas
+                // Handle escaped double quote (e.g., "" inside a quoted field)
                 current += '"';
-                i++; // Pular próxima aspa
+                i++; // Skip the next quote
             } else {
                 inQuotes = !inQuotes;
             }
@@ -297,11 +235,17 @@ function createResponseCard(response) {
                 </div>
             </div>
             
-            <div class="text-gray-700 leading-relaxed mb-4">
+            <div class="text-gray-700 leading-relaxed mb-4 overflow-hidden transition-all duration-300 ease-in-out max-h-0" id="response-text-${response.id}">
                 ${formatResponseText(response.resposta)}
             </div>
             
-            <div class="text-sm text-gray-500 flex items-center">
+            <div class="flex justify-center">
+                <button class="btn-toggle-text text-gray-500 hover:text-gray-700 transition-colors" data-target="response-text-${response.id}">
+                    <i class="fas fa-chevron-down text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="text-sm text-gray-500 flex items-center mt-2">
                 <i class="fas fa-info-circle mr-2"></i>
                 ${response.caracteres} caracteres
             </div>
@@ -354,6 +298,27 @@ function setupCardEventListeners() {
         btn.addEventListener('click', function() {
             const text = this.getAttribute('data-text');
             sendToWhatsApp(text);
+        });
+    });
+
+    // Botões de toggle de texto
+    document.querySelectorAll('.btn-toggle-text').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const targetElement = document.getElementById(targetId);
+            const icon = this.querySelector('i');
+
+            if (targetElement.classList.contains('max-h-0')) {
+                targetElement.classList.remove('max-h-0');
+                targetElement.classList.add('max-h-screen');
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+            } else {
+                targetElement.classList.remove('max-h-screen');
+                targetElement.classList.add('max-h-0');
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+            }
         });
     });
 }
@@ -428,71 +393,29 @@ function hideNoResults() {
     elements.noResults.classList.add('hidden');
 }
 
-// Modal de configurações
-function openSettings() {
-    elements.settingsModal.classList.remove('hidden');
-    elements.sheetsUrl.focus();
+// Função para voltar ao topo
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
 }
 
-function closeSettings() {
-    elements.settingsModal.classList.add('hidden');
-}
-
-function saveSettingsHandler() {
-    const newUrl = elements.sheetsUrl.value.trim();
-    
-    if (!newUrl) {
-        showToast('Por favor, insira um URL válido', 'error');
-        return;
+// Função para controlar a visibilidade do botão baseado no scroll
+function handleScroll() {
+    if (window.pageYOffset > 300) {
+        elements.backToTop.style.opacity = '1';
+        elements.backToTop.style.visibility = 'visible';
+    } else {
+        elements.backToTop.style.opacity = '0';
+        elements.backToTop.style.visibility = 'hidden';
     }
-    
-    CONFIG.sheetsUrl = newUrl;
-    saveConfig();
-    closeSettings();
-    showToast('Configurações salvas! Recarregando dados...');
-    
-    // Recarregar dados com nova URL
-    setTimeout(() => {
-        loadData();
-    }, 1000);
-}
-
-function loadSampleData() {
-    // Dados de exemplo para demonstração
-    const sampleData = [
-        {
-            titulo: 'Moldagem e Dentista',
-            categoria: 'Informação',
-            resposta: 'Olá 😊, poderia informar quando fez a moldagem? Qual seu dentista? 🦷',
-            emoji: '📝',
-            caracteres: 69
-        },
-        {
-            titulo: 'Valor e Procedimento',
-            categoria: 'Financeiro',
-            resposta: 'Informação sobre valor e procedimento: O valor é R$150,00 💰, demora cerca de 10 a 15 dias para ficar pronto.',
-            emoji: '💰',
-            caracteres: 115
-        },
-        {
-            titulo: 'Lembrete de Pagamento',
-            categoria: 'Financeiro',
-            resposta: 'Lembrete amigável: o pagamento é só quando eu avisar que o trabalho está pronto 📋. Qualquer dúvida, me chame!',
-            emoji: '📋',
-            caracteres: 114
-        }
-    ];
-    
-    allResponses = sampleData;
-    filteredResponses = [...allResponses];
-    renderResponses();
-    hideLoading();
-    closeSettings();
-    showToast('Dados de exemplo carregados!');
 }
 
 // Mostrar toast
 function showToast(message, type = 'success') {
+    if (!elements.toastMessage) return;
+    
     elements.toastMessage.textContent = message;
     
     if (type === 'error') {
@@ -502,8 +425,10 @@ function showToast(message, type = 'success') {
     }
     
     elements.toast.classList.remove('hidden');
+    elements.toast.classList.add('show');
     
     setTimeout(() => {
+        elements.toast.classList.remove('show');
         elements.toast.classList.add('hidden');
     }, 3000);
 }

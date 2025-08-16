@@ -1,112 +1,105 @@
-# 🦷 Respostas Rápidas
+# 🦷 Respostas Rápidas - Aplicação HTML Pura
 
-Uma aplicação web moderna para gerenciar e compartilhar respostas rápidas categorizadas, integrada com Google Sheets.
+Uma aplicação web simples e eficiente para gerenciar respostas rápidas categorizadas, desenvolvida com HTML, CSS e JavaScript puro.
 
 ## ✨ Funcionalidades
 
-- **📊 Integração com Google Sheets**: Carrega dados automaticamente de planilhas públicas
-- **🔍 Busca Inteligente**: Pesquise por título, categoria ou conteúdo das respostas
-- **📋 Copiar com Um Clique**: Copie qualquer resposta para a área de transferência
-- **📱 Integração WhatsApp**: Envie respostas diretamente pelo WhatsApp
-- **🎨 Design Responsivo**: Interface moderna e adaptável para mobile e desktop
-- **⚡ Carregamento Rápido**: Dados locais como fallback para máxima velocidade
+- **🔍 Busca em tempo real** - Encontre respostas rapidamente digitando palavras-chave
+- **📋 Copiar texto** - Botão para copiar respostas para a área de transferência
+- **📱 Envio para WhatsApp** - Botão para enviar respostas diretamente pelo WhatsApp
+- **⬇️ Cards com dropdown** - Interface limpa com conteúdo expansível
+- **🎨 Categorias coloridas** - Visual organizado por tipo de resposta
+- **⬆️ Botão voltar ao topo** - Navegação facilitada em listas longas
+- **📱 Design responsivo** - Funciona perfeitamente em desktop e mobile
 
-## 🚀 Como Usar
+## 🎨 Categorias
 
-### 1. Configuração Inicial
-1. Abra o arquivo `index.html` em qualquer navegador web
-2. A aplicação carregará automaticamente com os dados do Google Sheets configurado
+- **💰 Financeiro** (laranja) - Valores, pagamentos, PIX
+- **ℹ️ Informação** (azul) - Perguntas gerais, moldagem
+- **🎉 Entrega** (verde) - Trabalhos finalizados
+- **🦷 Orientação** (roxo) - Cuidados e instruções
 
-### 2. Configurar Nova Planilha (Opcional)
-1. Clique no botão de configurações (⚙️) no canto inferior direito
-2. Cole o link público do seu Google Sheets no formato CSV
-3. Clique em "Salvar" para aplicar as mudanças
-
-### 3. Formato da Planilha
-Sua planilha deve ter as seguintes colunas:
-- **Coluna A**: `titulos` - Título da resposta
-- **Coluna B**: `categoria` - Categoria (ex: Informação, Financeiro, Entrega, Orientação)
-- **Coluna C**: `texto` - Conteúdo completo da resposta
-- **Coluna D**: `Imagens` - (Opcional) Links para imagens
-
-### 4. Funcionalidades Principais
-
-#### 🔍 Buscar Respostas
-- Digite qualquer palavra-chave na barra de pesquisa
-- A busca funciona em tempo real nos títulos, categorias e conteúdo
-
-#### 📋 Copiar Texto
-- Clique no botão verde de copiar em qualquer card
-- O texto será copiado automaticamente para sua área de transferência
-- Uma notificação confirmará a ação
-
-#### 📱 Enviar pelo WhatsApp
-- Clique no botão verde do WhatsApp em qualquer card
-- Será aberta uma nova aba com o WhatsApp Web
-- O texto já estará preenchido, pronto para envio
-
-## 🎨 Categorias e Cores
-
-A aplicação organiza as respostas por categorias com cores distintas:
-
-- **💰 Financeiro** - Laranja (pagamentos, valores, PIX)
-- **ℹ️ Informação** - Azul (perguntas gerais, informações)
-- **🎉 Entrega** - Verde (trabalhos finalizados, entregas)
-- **🦷 Orientação** - Roxo (cuidados, instruções)
-
-## 📁 Estrutura de Arquivos
+## 📁 Estrutura dos Arquivos
 
 ```
 respostas-rapidas/
-├── index.html          # Página principal da aplicação
-├── script.js           # Lógica JavaScript e funcionalidades
-└── README.md           # Esta documentação
+├── index.html          # Página principal
+├── script.js           # Lógica da aplicação
+└── README.md           # Documentação
 ```
 
-## 🔧 Tecnologias Utilizadas
+## 🚀 Como Usar
 
-- **HTML5** - Estrutura semântica
-- **Tailwind CSS** - Framework CSS via CDN
-- **JavaScript ES6+** - Funcionalidades modernas
-- **Font Awesome** - Ícones vetoriais
-- **Google Sheets API** - Integração com planilhas
+1. **Abrir a aplicação**: Abra o arquivo `index.html` em qualquer navegador web
+2. **Buscar respostas**: Digite palavras-chave no campo de busca
+3. **Expandir conteúdo**: Clique na seta para baixo para ver o texto completo
+4. **Copiar texto**: Clique no botão verde de copiar
+5. **Enviar pelo WhatsApp**: Clique no botão verde do WhatsApp
+
+## 🔧 Personalização
+
+### Adicionar Novas Respostas
+
+Para adicionar novas respostas, edite a variável `localData` no arquivo `script.js`:
+
+```javascript
+const localData = `titulos,categoria,texto,Imagens
+Novo Título,Categoria,"Texto da resposta aqui",
+`;
+```
+
+### Formato dos Dados
+
+- **titulos**: Título da resposta
+- **categoria**: Categoria (Financeiro, Informação, Entrega, Orientação)
+- **texto**: Conteúdo da resposta (pode conter quebras de linha)
+- **Imagens**: Campo opcional (não utilizado atualmente)
+
+### Personalizar Cores
+
+As cores das categorias podem ser alteradas no arquivo `index.html` nas classes CSS:
+
+```css
+.financeiro { background-color: #f97316; }    /* Laranja */
+.informacao { background-color: #3b82f6; }    /* Azul */
+.entrega { background-color: #10b981; }       /* Verde */
+.orientacao { background-color: #8b5cf6; }    /* Roxo */
+```
+
+## 🌐 Hospedagem
+
+Esta aplicação pode ser hospedada em qualquer servidor web estático:
+
+- **GitHub Pages** - Gratuito e fácil de usar
+- **Netlify** - Deploy automático com Git
+- **Vercel** - Hospedagem rápida e gratuita
+- **Servidor próprio** - Qualquer servidor web (Apache, Nginx, etc.)
 
 ## 📱 Compatibilidade
 
-- ✅ Chrome/Edge (Recomendado)
+- ✅ Chrome/Chromium
 - ✅ Firefox
 - ✅ Safari
+- ✅ Edge
 - ✅ Dispositivos móveis (iOS/Android)
 
-## 🛠️ Personalização
+## 🔒 Privacidade
 
-### Alterar Cores das Categorias
-Edite as classes CSS no arquivo `index.html`:
+- **Sem coleta de dados** - Todos os dados ficam no seu navegador
+- **Sem cookies** - Não utiliza cookies ou rastreamento
+- **Offline-ready** - Funciona sem conexão com a internet após o primeiro carregamento
 
-```css
-.category-tag.financeiro {
-    background: linear-gradient(45deg, #f59e0b, #d97706);
-}
-```
+## 🛠️ Tecnologias Utilizadas
 
-### Adicionar Novas Categorias
-1. Adicione nova categoria na planilha
-2. Inclua emoji correspondente na função `getEmojiForCategory()`
-3. Adicione classe CSS se necessário
+- **HTML5** - Estrutura da página
+- **CSS3** - Estilização e layout responsivo
+- **JavaScript ES6+** - Lógica da aplicação
+- **Tailwind CSS** - Framework CSS via CDN
+- **Font Awesome** - Ícones
 
-## 🔒 Privacidade e Segurança
+## 📄 Licença
 
-- Todos os dados são carregados diretamente do Google Sheets
-- Nenhuma informação é armazenada em servidores externos
-- Funciona completamente offline após o primeiro carregamento
-- Configurações salvas apenas no navegador local
-
-## 📞 Suporte
-
-Para dúvidas ou problemas:
-1. Verifique se a planilha está pública e no formato correto
-2. Teste com os dados de exemplo clicando em "Exemplo" nas configurações
-3. Verifique o console do navegador para mensagens de erro
+Este projeto é de uso livre. Você pode modificar e distribuir conforme necessário.
 
 ---
 
