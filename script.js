@@ -1,6 +1,7 @@
-// Configurações da aplicação
+// Configurações da aplicação 
+//sheetsUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSNMZw_fZj10NQOvxSEDJUlSc4UdcmHvRzX4m6slpq6f-saYglDYFs0pbg9uk8FKgl5nK_ZLhijHLRk/pub?gid=0&single=true&output=csv',
 const CONFIG = {
-    sheetsUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSNMZw_fZj10NQOvxSEDJUlSc4UdcmHvRzX4m6slpq6f-saYglDYFs0pbg9uk8FKgl5nK_ZLhijHLRk/pub?gid=0&single=true&output=csv',
+    sheetsUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSNMZw_fZj10NQOvxSEDJUlSc4UdcmHvRzX4m6slpq6f-saYglDYFs0pbg9uk8FKgl5nK_ZLhijHLRk/pub?output=csv',
     delimiter: ",",
     storageKey: 'respostas-rapidas-config'
 };
