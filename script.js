@@ -1,5 +1,5 @@
 // Configurações da aplicação 
-//sheetsUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSNMZw_fZj10NQOvxSEDJUlSc4UdcmHvRzX4m6slpq6f-saYglDYFs0pbg9uk8FKgl5nK_ZLhijHLRk/pub?gid=0&single=true&output=csv',
+
 const CONFIG = {
     sheetsUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSNMZw_fZj10NQOvxSEDJUlSc4UdcmHvRzX4m6slpq6f-saYglDYFs0pbg9uk8FKgl5nK_ZLhijHLRk/pub?output=csv',
     delimiter: ",",
@@ -77,54 +77,32 @@ E você pode ter alguns cuidados para manter ele lindo por mais tempo:
 // Carregar dados locais (sem dependência de Google Sheets)
 function loadData() {
     showLoading();
-    
-    const testData = [
-        {
-            id: 'response-1',
-            titulo: 'Moldagem e Dentista',
-            categoria: 'Informação',
-            resposta: '📝 Olá 😊, poderia informar quando fez a moldagem? Qual seu dentista? 🦷',
-            emoji: 'ℹ️',
-            caracteres: 72
-        },
-        {
-            id: 'response-2',
-            titulo: 'Valor e Procedimento',
-            categoria: 'Financeiro',
-            resposta: 'Informação sobre valor e procedimento:\nO valor é R$150,00 💵, demora cerca de 10 a 15 dias para ficar pronto! Pode ficar pronto antes! Recebo por Pix ou transferência no momento da entrega, aviso 2 dias antes!\nPIX: 95991195913 - Jaison Jose Bastos Martins 🔒\nOBS: Pagamento somente quando eu avisar que está pronto!',
-            emoji: '💰',
-            caracteres: 315
-        },
-        {
-            id: 'response-3',
-            titulo: 'Lembrete de Pagamento',
-            categoria: 'Financeiro',
-            resposta: 'O pagamento é só quando eu avisar que o trabalho está pronto 💳. Qualquer dúvida, só chamar! 😊',
-            emoji: '💰',
-            caracteres: 95
-        },
-        {
-            id: 'response-4',
-            titulo: 'Trabalho Finalizado',
-            categoria: 'Entrega',
-            resposta: 'Olá! 🎉 Seu trabalho está pronto! Agora fico aguardando seu pagamento. Assim que fizer o Pix, me avise para que eu deixe no Sest Senat, ok? ✔️\n💸 PIX: 95991195913 - Jaison Jose Bastos Martins',
-            emoji: '🎉',
-            caracteres: 191
-        },
-        {
-            id: 'response-5',
-            titulo: 'Guia de Cuidados',
-            categoria: 'Orientação',
-            resposta: 'Esse é o seu aparelho, feito especialmente pra você! 🦷✨\n\nE você pode ter alguns cuidados para manter ele lindo por mais tempo:\n🪥 Escove o aparelho todos os dias com DETERGENTE NEUTRO, para não formar tártaro e mau cheiro.\n⚠️ Não segure no arco (fio) para higienizá-lo.\n💦 Enxágue bem para retirar toda saliva sempre que retirar da boca e guardar na caixinha.\n📦 Guarde-o sempre na caixinha própria, evitando risco de quebra e perda.\n👃 Lembre-se que o aparelho pega o cheiro da sua boca, então escove sempre os dentes.\n🍽️ Retire o aparelho sempre para se alimentar.\n🔥 Alimentos quentes podem danificá-lo.',
-            emoji: '🦷',
-            caracteres: 608
-        }
-    ];
-    
-    allResponses = testData;
-    filteredResponses = [...allResponses];
-    renderResponses();
-    hideLoading();
+    fetch(CONFIG.sheetsUrl)
+        .then(response => {
+            if (!response.ok) throw new Error('Erro ao buscar dados do Google Sheets');
+            return response.text();
+        })
+        .then(csvText => {
+            const data = parseCSV(csvText);
+            if (data.length > 0) {
+                allResponses = data;
+                filteredResponses = [...allResponses];
+                renderResponses();
+            } else {
+                throw new Error('Nenhum dado encontrado no CSV');
+            }
+            hideLoading();
+        })
+        .catch(error => {
+            console.error('Erro ao carregar dados remotos:', error);
+            // Fallback para dados locais
+            const data = parseCSV(localData);
+            allResponses = data;
+            filteredResponses = [...allResponses];
+            renderResponses();
+            hideLoading();
+            showToast('Dados carregados localmente!', 'error');
+        });
 }
 
 // Parser CSV robusto
